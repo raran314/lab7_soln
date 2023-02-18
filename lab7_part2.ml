@@ -26,26 +26,26 @@ A useful feature of OCaml is that it *automatically* wraps functions
 and values that are defined in a single file into a module named after
 that file. The module name is the name of the file with the first
 letter capitalized. This functionality is in addition to the manual
-definition of modules as you've just used in Part 1, but it is a
+definition of modules as you've just used in Part 1, and it is a
 convenient way of separating code into separate namespaces when
 writing a large program.
 
 There are other source files included in this lab, other than the
 `lab7_partn.ml` files. The file `color.ml` contains an implementation
-of a system for managing colors. (Recall the idea of colors as
-consisting of values for three color channels (red, green, and blue)
-from lab 5.) Take a look at it to see what functions and values it
-contains, including a type for colors, and a means for converting
-values for the three color channels into the abstract color type,
-extracting the channels individually from colors, and converting some
-standard color names to this color representation.
+of a system for managing colors. (Recall from lab 5 the idea of colors
+as consisting of values for three color channels -- red, green, and
+blue.) Take a look at it to see what functions and values it contains,
+including a type for colors, and a means for converting values for the
+three color channels into the abstract color type, extracting the
+channels individually from colors, and converting some standard color
+names to this color representation.
 
 With the exception of Exercise 2A, you will need to modify *only*
-color.ml to complete the exercises below.
+the file `color.ml` to complete the exercises below.
 
     A digression on accessing other modules:
 
-    You'll want to test this part of the lab using ocamlbuild, for
+    You'll want to test this part of the lab using `ocamlbuild`, for
     instance, with
 
        % ocamlbuild -use-ocamlfind lab7_part2.byte
@@ -56,10 +56,10 @@ color.ml to complete the exercises below.
     compile those additional files, and link them to your compiled
     program. You can then access functions from those files under the
     module name, which (again) is the name of the file with the first
-    letter capitalized. For instance, if color.ml is in the same
-    directory as lab7_part2.ml (which it probably is), ocamlbuild will
-    find it and use it, since it is referenced through expressions
-    like `Color.red` and the like.
+    letter capitalized. For instance, if `color.ml` is in the same
+    directory as `lab7_part2.ml` (which it probably is), `ocamlbuild`
+    will find it and use it, since it is referenced through
+    expressions like `Color.red` and the like.
 
     On the other hand, if you're testing with a top-level REPL, like
     utop or ocaml, it will *not* automatically find those modules and
@@ -78,48 +78,50 @@ color.ml to complete the exercises below.
 
     Keep in mind however that the `#mod_use` and `#use` directives
     look only at their argument files, not at any corresponding `.mli`
-    files, so the modules being used will not be restricted to the
+    files, so the modules being used will *not* be restricted to the
     signatures in the corresponding `.mli` files. For that, you'll
     have to use the compiler (with `ocamlbuild` for instance).
 
 ........................................................................
 Exercise 2A: Replace the `0` in the expression below with an
 expression that extracts the red channel of the color named `Red`,
-thereby naming the result `red_channel`.
+thereby naming the result `red_channel`. The expression will be
+constructed from values in the `Color` module.
 ......................................................................*)
 
 let red_channel : int =
-  Color.red (Color.color_named Color.Red) ;;
+  let open Color in
+  red (color_named Red) ;;
 
-(* or if you prefer
+(* Without the local open, we get the slightly more verbose
 
     let red_channel : int =
       let open Color in
-      red (color_named Red) ;;
+      Color.red (Color.color_named Color.Red) ;;
  *)
 
 (* Let's investigate one way that a signature can be useful. Although
-color.ml contains an implementation of a basic color module, the
+`color.ml` contains an implementation of a basic color module, the
 implementation is unintuitive and obscure -- truly *horrid* in
 fact. (We did that on purpose.) You will want to change the
-implementation of color.ml, rewriting it wholesale. At the same time,
+implementation of `color.ml`, rewriting it wholesale. At the same time,
 you'll want to guarantee to users of the module (like this file
 itself!) that the functionality stays the same; the way to do this is
 through module signatures.
 
 ......................................................................
-Exercise 2B: Add a file color.mli, in which you define an appropriate
-signature for the Color module. Consider which types and values you
+Exercise 2B: Add a file `color.mli`, in which you define an appropriate
+signature for the `Color` module. Consider which types and values you
 want revealed to the user and which you would prefer to be hidden.
 
-Once you have color.mli implemented, you should still be able to
-compile color.ml and run color.byte.
+Once you have `color.mli` implemented, you should still be able to
+compile `color.ml` and run `color.byte`.
 ......................................................................*)
 
 (* The module type for the `Color` module captures the interface we want
-   our color modules to obey. Your color.mli file should have the 
+   our color modules to obey. Your `color.mli` file should have the 
    following types and values declared. If you have trouble getting this
-   to work, you can find our solution in color.mli.
+   to work, you can find our solution in `color.mli`.
 
     type color ;;
     type color_name =
@@ -161,16 +163,17 @@ the `color_name` type to have the following values:
 
 ......................................................................*)
 
-(* See the solution in color.ml *)
+(* See the solution in `color.ml` *)
 
-(* Here's the payoff: A user who uses the color module, by virtue of
-having to stay within the color.mli interface, will not notice *any
-difference at all* between the implementations in `color.ml`. The
+(* Here's the payoff: A user who uses the `color` module, by virtue of
+having to stay within the `color.mli` interface, will not notice *any
+difference at all* between the two implementations of `color.ml`, the
+horrid one we provided and the elegant one you've developed. The
 underlying implementation can be changed any time in any way, so long
 as the functionality provided stays consistent with the signature.
 
-For instance, consider the `List` module that you are familiar with by
-now. You never needed to worry about how the `List` module was
+Correspondingly, consider the `List` module that you are familiar with
+by now. You never needed to worry about how the `List` module was
 implemented in order to use it; you only needed to understand the
 interface.
 

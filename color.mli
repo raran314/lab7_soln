@@ -26,6 +26,6 @@ val red : color -> int ;;
 val green: color -> int ;;
 val blue: color -> int ;;
 
-(* color_named name -- Returns the color corresponding to the color
+(* color_named name -- Returns the `color` corresponding to the color
    `name` *)
 val color_named: color_name -> color ;;

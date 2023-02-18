@@ -24,12 +24,12 @@ Part 4: Polymorphic abstract types
 
 You may have noticed that the stack module in Part 3 focused
 exclusively on stacks of `int` values. But this doesn't have to be so:
-we can also create modules with polymorphic abstract data types, even
-ones protected by a signature.
+we can also create modules that implement polymorphic abstract data
+types, even ones protected by a signature.
 
 Below is a signature for a stack data structure, but providing a
-polymorphic abstract type so that we can generalize stacks to be int
-stacks, string stacks, stacks of all sorts. *)
+polymorphic abstract type so that we can generalize stacks to be `int`
+stacks, `string` stacks, stacks of all sorts. *)
 
 module type STACK =
   sig
@@ -42,13 +42,14 @@ module type STACK =
   end ;;
 
 (*......................................................................
-Exercise 4A: Complete the implementation below of this stack module
-type. First, decide how you'll represent the stack (perhaps as lists,
-though the abstraction barrier means that you're free to choose
-otherwise), then implement each of the functions in the signature
-based on your decision. You may want to look at Part 3 for
-inspiration, but this implementation may differ from your previous
-implementation based on a design choice we describe below.
+Exercise 4A: Complete the implementation below of a module that
+satisfies this stack module signature. First, decide how you'll
+represent the stack (perhaps as lists, though the abstraction barrier
+means that you're free to choose otherwise), then implement each of
+the functions in the signature based on your decision. You may want to
+look at Part 3 for inspiration, but this implementation may differ
+from your previous implementation based on a design choice we describe
+below.
 
 Then, implement each of the values in the stack signature above. We
 helped you out a little and defined `top` and `pop` for you,
@@ -58,8 +59,9 @@ containing the first element ofthe argument stack and a stack with the
 first element removed.
 
 Notice that the `pop_helper` function does *not* appear in the
-signature, and will therefore *not* be accessible to functions outside
-of the module.
+signature, and will therefore *not* be accessible to functions
+*outside* of the module. But you'll be able to use it *inside* the
+implementation of the module.
 
 You'll want to take advantage of the `EmptyStack` exception provided
 in the module; raise it if an attempt is made to examine or pop the
@@ -78,27 +80,27 @@ module Stack : STACK =
     let empty : 'a stack = []
 
     (* push i s -- Adds an element i to the top of stack s *)
-    let push (i : 'a) (s : 'a stack) : 'a stack =
-      i :: s
+    let push (elt : 'a) (stk : 'a stack) : 'a stack =
+      elt :: stk
 
     (* pop_helper s -- Returns a pair of the top element of the
        stack and a stack containing the remaining elements *)
-    let pop_helper (s : 'a stack) : 'a * 'a stack =
-      match s with
+    let pop_helper (stk : 'a stack) : 'a * 'a stack =
+      match stk with
       | [] -> raise EmptyStack
-      | h :: t -> (h, t)
+      | hd :: tl -> (hd, tl)
 
     (* top s -- Returns the value of the topmost element on stack s,
        raising the EmptyStack exception if there is no element to be
        returned. *)
-    let top (s: 'a stack) : 'a =
-      fst (pop_helper s)
+    let top (stk: 'a stack) : 'a =
+      fst (pop_helper stk)
 
     (* pop s -- Returns a stack with the topmost element from s
        removed, raising the EmptyStack exception if there is no
        element to be removed. *)
-    let pop (s : 'a stack) : 'a stack =
-      snd (pop_helper s)
+    let pop (stk : 'a stack) : 'a stack =
+      snd (pop_helper stk)
   end ;;
 
 (*......................................................................
@@ -120,9 +122,9 @@ let sample_stack () =
    make that impossible. *)
 
 (*......................................................................
-Exercise 4C: Write an expression that generates a stack with the
-`sample_stack` function above and extracts the top element of the
-stack, naming it `top_el`.
+Exercise 4C: Write an expression that generates a stack by applying
+the `sample_stack` function above and extracts its top element of the
+stack, naming theat top element `top_el`.
 ......................................................................*)
 
 let top_el : string = Stack.top (sample_stack ()) ;;

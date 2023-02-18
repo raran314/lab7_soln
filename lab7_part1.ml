@@ -22,10 +22,10 @@ files to complete all exercises:
 (*======================================================================
 Part 1: Implementing Modules
 
-Modules are a way to package together and encapsulate types and values
+*Modules* are a way to package together and encapsulate types and values
 (including functions) into a single discrete unit.
 
-By applying a signature to a module, we guarantee that the module
+By applying a *signature* to a module, we guarantee that the module
 implements at least the values and functions defined within it. The
 module may also implement more as well, for internal use, but only
 those specified in the signature will be exposed and available outside
@@ -47,21 +47,15 @@ module type MATH =
     (* sum of two numbers *)
     val sum : float -> float -> float
     (* maximum value in a list; None if list is empty *)
-    val max : float list -> float option
+    val max_opt : float list -> float option
   end ;;
 
 (*......................................................................
 Exercise 1A: Complete the implementation of a module called `Math`
 that satisfies the signature above. Feel free to make use of various
 functions in the `Stdlib` module
-<https://caml.inria.fr/pub/docs/manual-ocaml/libref/Stdlib.html>.
-
-(You may wonder, what's that `nan` in our dummy definition? The value
-`nan` stands for "not a number" and is an actual value of the float
-type, as dictated by the IEEE Floating Point standard described at
-<https://en.wikipedia.org/wiki/IEEE_754>. We're using it here as a
-temporary value pending your putting in appropriate ones.)
-......................................................................*)
+<https://caml.inria.fr/pub/docs/manual-ocaml/libref/Stdlib.html>. *)
+(*....................................................................*)
 
 (* Most of the pertinent math functions are already available in the
 `Stdlib` module
@@ -70,11 +64,19 @@ We can just use them here. And since functions are first-class values
 in OCaml, you don't need to replicate the argument structure in the
 definitions. For example, there's no need for
 
-    let cos x = cos x     .
+    let cos x = Stdlib.cos x     .
 
-The only function not already available is `max`; we generated a simple
+We can simply specify
+
+    let cos = Stdlib.cos
+
+or, because the Stdlib module is always pre-opened,
+
+    let cos = cos     .
+
+The only function not already available is `max_opt`; we generated a simple
 implementation using a partially applied fold on non-empty lists.
-Within `max`, we call `List.fold_left` on the `max` function from the
+Within `max_opt`, we call `List.fold_left` on the `max` function from the
 `Stdlib` module to update the accumulator each time a value in the
 list is greater than the previous maximum value. *)
 
@@ -84,7 +86,7 @@ module Math : MATH =
     let cos = cos
     let sin = sin
     let sum = (+.)
-    let max lst =
+    let max_opt lst =
       match lst with
       | [] -> None
       | hd :: tl -> Some (List.fold_left max hd tl)
@@ -97,7 +99,7 @@ type float option. Name the resulting value `result`. (Use explicit
 module prefixes for this exercise, not global or local opens.)
 ......................................................................*)
 
-let result = Math.max [Math.cos Math.pi; Math.sin Math.pi] ;;
+let result = Math.max_opt [Math.cos Math.pi; Math.sin Math.pi] ;;
 
 (*......................................................................
 Exercise 1C: Reimplement the computation from 1B above, now as
@@ -107,6 +109,6 @@ in a more succinct manner.
 
 let result_local_open =
   let open Math in
-  max [cos pi; sin pi] ;;
+  max_opt [cos pi; sin pi] ;;
 
 (* Isn't the version with the local open more readable?! *)

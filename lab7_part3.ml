@@ -67,20 +67,20 @@ module IntListStack =
     (* empty -- An empty stack *)
     let empty : stack = []
 
-    (* push i s -- Adds an integer element i to the top of stack s *)
+    (* push i s -- Adds an integer element `i` to the top of stack `s` *)
     let push (i : int) (s : stack) : stack =
       i :: s
 
-    (* top s -- Returns the value of the topmost element on stack s,
-       raising the EmptyStack exception if there is no element to be
+    (* top s -- Returns the value of the topmost element on stack `s`,
+       raising the `EmptyStack` exception if there is no element to be
        returned. *)
     let top (s : stack) : int =
       match s with
       | [] -> raise EmptyStack
       | h :: _ -> h
 
-    (* pop s -- Returns a stack with the topmost element from s
-       removed, raising the EmptyStack exception if there is no
+    (* pop s -- Returns a stack with the topmost element from `s`
+       removed, raising the `EmptyStack` exception if there is no
        element to be removed. *)
     let pop (s : stack) : stack =
       match s with
@@ -104,8 +104,9 @@ let small_stack () : IntListStack.stack =
   |> push 1 ;;
 
 (*......................................................................
-Exercise 3C: Now, use `IntListStack` functions to write an expression that
-defines `last_el` as the value of the topmost element from `small_stack`.
+Exercise 3C: Now, use `IntListStack` functions to write an expression
+that defines `last_el` as the value of the topmost element from
+`small_stack`.
 ......................................................................*)
 
 let last_el = IntListStack.top (small_stack ()) ;;
@@ -131,13 +132,13 @@ with the elements in reverse order, *without using any of the
 let invert_stack : IntListStack.stack -> IntListStack.stack =
   List.rev ;;
 
-(* No need to "rewrap" the function, e.g.,
+(* By the way, no need to "rewrap" the function, that is,
 
     let invert_stack (stk : IntListStack.stack) : IntListStack.stack =
       List.rev stk ;;
  *)
 
-(* Now what would be the result of the top operation on a stack
+(* Now what would be the result of the `top` operation on a stack
 inverted with `invert_stack`? Let's try it.
 
 ........................................................................
@@ -152,15 +153,15 @@ let bad_el = IntListStack.top (invert_stack (small_stack ())) ;;
 by the `IntListStack` module. You may wonder: "if I know that the module
 is defined by a list, why not have the power to update it manually?"
 
-Several reasons:
+Two reasons:
 
 1. As we've just done, it was entirely possible for a user of the
    module to completely modify a value in its internal representation.
    Imagine what would happen for a more complex module that allowed us
    to break an invariant! From Problem Set 3, what would break if a
-   person could change a zero bignum to directly set the negative
-   flag? Or construct a list of coefficients some of which are larger
-   than the base?
+   person could change a bignum representing zero to directly set the
+   negative flag? Or construct a list of coefficients some of which
+   are larger than the base?
 
 2. What if the developer of the module wants to change the module
    implementation for a more sophisticated version? Stacks are fairly
@@ -194,17 +195,17 @@ module type INT_STACK =
     val pop : stack -> stack
   end ;;
 
-(* Now, we'll apply the `INT_STACK` interface to the `IntListStack` to
-form a module `SafeIntListStack` that is protected by the `INT_STACK`
-signature. *)
+(* Now, we'll restrict the `IntListStack` module to enforce the
+`INT_STACK` interface to form a module called `SafeIntListStack`. *)
 
 module SafeIntListStack = (IntListStack : INT_STACK) ;;
 
 (*......................................................................
-Exercise 3G: Write a function `safe_stack` that takes a unit and uses
-`SafeIntListStack` methods to return a stack of type
-`SafeIntListStack.stack`, with the integers 5 and then 1 pushed onto
-it.
+Exercise 3G: Let's redo Exercise 3B using the `SafeIntListStack`
+abstract data type we've just built. Write a function `safe_stack`
+that takes a unit and uses `SafeIntListStack` methods to return a
+stack of type `SafeIntListStack.stack`, with the integers 5 and then 1
+pushed onto it.
 
 Notice: What type is `safe_stack`? You should no longer be able to
 perform list operations directly on it, which means the stack
